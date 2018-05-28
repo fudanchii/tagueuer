@@ -7,4 +7,6 @@ jobs:
     steps:
       - checkout
       - run: dep ensure
-      - run: go test
+      - run: |
+          go get github.com/ginkgo/ginkgo
+      - run: ginkgo ./...
