@@ -8,6 +8,6 @@ jobs:
       - checkout
       - run: godep restore
       - run: |
-        go get -u github.com/onsi/ginkgo/ginkgo
-        go get -u github.com/onsi/gomega/...
+          go get -u github.com/onsi/ginkgo/ginkgo
+          go get -u github.com/onsi/gomega/...
       - run: go test
