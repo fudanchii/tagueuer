@@ -1,5 +1,11 @@
 package tagueuer
 
+import (
+	"fmt"
+	"reflect"
+	"strconv"
+)
+
 type CallbackFunc func(ctx *Context) (string, error)
 
 type Tagueuer struct {

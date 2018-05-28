@@ -1,5 +1,10 @@
 package tagueuer
 
+import (
+	"reflect"
+	"strings"
+)
+
 type Context struct {
 	tags  []string
 	field reflect.StructField
