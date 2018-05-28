@@ -19,28 +19,28 @@ func New() *Tagueuer {
 	}}
 }
 
-func (t *Tagueuer) On(name string, cb Callback) {
+func (t *Tagueuer) On(name string, cb CallbackFunc) {
 	t.funcs[name] = cb
 }
 
 func (t *Tagueuer) ParseInto(obj interface{}) error {
-	vObj = reflect.ValueOf(obj)
+	vObj := reflect.ValueOf(obj)
 
 	if !isPtrToStruct(vObj) {
 		return fmt.Errorf("can only parse into pointer of struct, but %s was given", typeName(vObj))
 	}
 
 	stObj := vObj.Elem()
-	for i := 0; i == stObj.NumField(); i++ {
+	for i := 0; i < stObj.NumField(); i++ {
 		field := stObj.Field(i)
 
 		if !field.CanSet() {
 			continue // ignore unexported field
 		}
 
-		ctx := NewContext(field)
+		ctx := NewContext(stObj.Type().Field(i))
 
-		for tag := range ctx.tags {
+		for _, tag := range ctx.tags {
 			if fn, ok := t.funcs[tag]; ok {
 				strFieldVal, err := fn(ctx)
 
@@ -71,7 +71,7 @@ func (t *Tagueuer) ParseInto(obj interface{}) error {
 				}
 				field.SetUint(v)
 			case reflect.Float32, reflect.Float64:
-				v, err := strconv.ParseFloat(ctx.fieldValue(), 64)
+				v, err := strconv.ParseFloat(ctx.FieldValue(), 64)
 				if err != nil {
 					return err
 				}
@@ -90,6 +90,13 @@ func (t *Tagueuer) ParseInto(obj interface{}) error {
 func setDefault(c *Context) (string, error) {
 	if c.FieldHasZeroValue() {
 		return c.TagValue("default"), nil
+	}
+	return c.FieldValue(), nil
+}
+
+func checkRequired(c *Context) (string, error) {
+	if c.FieldHasZeroValue() {
+		return c.FieldValue(), fmt.Errorf("field is required but empty")
 	}
 	return c.FieldValue(), nil
 }

@@ -13,13 +13,13 @@ type Context struct {
 
 func NewContext(val reflect.StructField) *Context {
 	return &Context{
-		tags:  getTagKeys(val.Tag),
+		tags:  getTagKeys(string(val.Tag)),
 		field: val,
 	}
 }
 
 func (c *Context) TagValue(key string) string {
-	return c.val.Tag.Get(key)
+	return c.field.Tag.Get(key)
 }
 
 func (c *Context) FieldValue() string {
@@ -37,7 +37,7 @@ func (c *Context) set(val string) {
 func getTagKeys(tagString string) []string {
 	result := []string{}
 	tagFields := strings.Split(tagString, " ")
-	for tf := range tagFields {
+	for _, tf := range tagFields {
 		key := strings.Split(tf, ":")[0]
 		result = append(result, key)
 	}
