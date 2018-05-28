@@ -96,7 +96,7 @@ func setDefault(c *Context) (string, error) {
 
 func checkRequired(c *Context) (string, error) {
 	if c.FieldHasZeroValue() {
-		return c.FieldValue(), fmt.Errorf("field is required but empty")
+		return c.FieldValue(), fmt.Errorf("field is required but empty for tag: `%s`", c.field.Tag)
 	}
 	return c.FieldValue(), nil
 }

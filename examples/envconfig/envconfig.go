@@ -1,6 +1,11 @@
 package envconfig
 
-import "github.com/fudanchii/tagueuer"
+import (
+	"os"
+	"strings"
+
+	"github.com/fudanchii/tagueuer"
+)
 
 var envParser = tagueuer.New()
 
@@ -9,7 +14,7 @@ func init() {
 }
 
 func readEnv(c *tagueuer.Context) (string, error) {
-	return os.GetEnv(c.TagValue("envconfig")), nil
+	return os.Getenv(strings.ToUpper(c.TagValue("envconfig"))), nil
 }
 
 func ParseInto(obj interface{}) error {
