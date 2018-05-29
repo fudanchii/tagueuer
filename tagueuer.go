@@ -6,12 +6,22 @@ import (
 	"strconv"
 )
 
+// CallbackFunc is a function which is called when
+// tagueuer encounter tag declaration.
+// The provided function will be called with `*tagueuer.Context`
+// passed as parameter. This function is expected to return string
+// which is the value to be used for this struct field, and an error,
+// if any.
 type CallbackFunc func(ctx *Context) (string, error)
 
+// Tagueuer main struct, stores a map of callback functions
+// to be used when populating the struct.
 type Tagueuer struct {
 	funcs map[string]CallbackFunc
 }
 
+// New creates new Tagueuer struct. With default handler
+// for `default` and `required` tag provided.
 func New() *Tagueuer {
 	return &Tagueuer{map[string]CallbackFunc{
 		"default":  setDefault,
@@ -19,10 +29,14 @@ func New() *Tagueuer {
 	}}
 }
 
+// On assigns new callback for the given tag key. This can also be used
+// to override the default handlers
 func (t *Tagueuer) On(name string, cb CallbackFunc) {
 	t.funcs[name] = cb
 }
 
+// ParseInto parse the struct tags from given `obj` and populate the resulted data
+// back into `obj`. obj is expected to be a pointer of struct.
 func (t *Tagueuer) ParseInto(obj interface{}) error {
 	vObj := reflect.ValueOf(obj)
 
@@ -55,9 +69,11 @@ func (t *Tagueuer) ParseInto(obj interface{}) error {
 		if !ctx.FieldHasZeroValue() {
 			switch field.Kind() {
 			case reflect.Bool:
-				if ctx.FieldValue() == "true" {
-					field.SetBool(true)
+				v, err := strconv.ParseBool(ctx.FieldValue())
+				if err != nil {
+					return err
 				}
+				field.SetBool(v)
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 				v, err := strconv.ParseInt(ctx.FieldValue(), 10, 64)
 				if err != nil {
