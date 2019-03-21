@@ -2,11 +2,9 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.10
-    working_directory: /go/src/github.com/fudanchii/tagueuer
+      - image: circleci/golang:1.12
     steps:
       - checkout
-      - run: dep ensure
       - run: |
           go get github.com/onsi/ginkgo/ginkgo
       - run: ginkgo ./...
