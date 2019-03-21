@@ -11,10 +11,11 @@ var _ = Describe("Tagueuer", func() {
 	var (
 		tagParser = tagueuer.New()
 		eg2       struct {
-			Name  string            `field_name:"student_name" required:"true"`
-			Class int               `field_name:"class" required:"true"`
-			Year  int               `field_name:"year" required:"true"`
-			meta  map[string]string `field_name:"meta"`
+			Name   string `field_name:"student_name" required:"true"`
+			Class  int    `field_name:"class" required:"true"`
+			Year   int    `field_name:"year" required:"true"`
+			Course string `field_name:"course" default:"abc"`
+			Jump   int    `field_name:"jump" default:"&jump"`
 		}
 
 		data = map[string]string{
@@ -28,6 +29,9 @@ var _ = Describe("Tagueuer", func() {
 		tagParser.On("field_name", func(c *tagueuer.Context) (string, error) {
 			return data[c.TagValue("field_name")], nil
 		})
+
+		tagueuer.Defaults("jump", "3")
+
 		tagParser.ParseInto(&eg2)
 	})
 
@@ -42,6 +46,16 @@ var _ = Describe("Tagueuer", func() {
 
 		It("has correct value for year", func() {
 			Expect(eg2.Year).To(Equal(1))
+		})
+	})
+
+	Context("parse struct with defaults", func() {
+		It("has correct value for course", func() {
+			Expect(eg2.Course).To(Equal("abc"))
+		})
+
+		It("has correct value for jump", func() {
+			Expect(eg2.Jump).To(Equal(3))
 		})
 	})
 })

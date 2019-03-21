@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 // CallbackFunc is a function which is called when
@@ -14,11 +15,20 @@ import (
 // if any.
 type CallbackFunc func(ctx *Context) (string, error)
 
+// DefaultsFuncList is a function which is called when
+// default tag is set to function call, e.g:  `funcname()`
+// tagueuer will mach the function name listed here
+type DefaultValues map[string]string
+
 // Tagueuer main struct, stores a map of callback functions
 // to be used when populating the struct.
 type Tagueuer struct {
 	funcs map[string]CallbackFunc
 }
+
+var (
+	defaults = make(DefaultValues)
+)
 
 // New creates new Tagueuer struct. With default handler
 // for `default` and `required` tag provided.
@@ -27,6 +37,10 @@ func New() *Tagueuer {
 		"default":  setDefault,
 		"required": checkRequired,
 	}}
+}
+
+func Defaults(name string, def string) {
+	defaults[name] = def
 }
 
 // On assigns new callback for the given tag key. This can also be used
@@ -104,8 +118,12 @@ func (t *Tagueuer) ParseInto(obj interface{}) error {
 }
 
 func setDefault(c *Context) (string, error) {
+	def := c.TagValue("default")
 	if c.FieldHasZeroValue() {
-		return c.TagValue("default"), nil
+		if strings.HasPrefix(def, "&") {
+			return defaults[strings.Trim(def, "&")], nil
+		}
+		return def, nil
 	}
 	return c.FieldValue(), nil
 }
