@@ -7,18 +7,12 @@ import (
 	"github.com/fudanchii/tagueuer"
 )
 
-var envParser = tagueuer.New()
-
-func init() {
+func New() *tagueuer.Tagueuer {
+	envParser := tagueuer.New()
 	envParser.On("envconfig", readEnv)
+	return envParser
 }
 
 func readEnv(c *tagueuer.Context) (string, error) {
 	return os.Getenv(strings.ToUpper(c.TagValue("envconfig"))), nil
-}
-
-// ParseInto parses tags from the given struct and populate the struct
-// based on declared environment variables.
-func ParseInto(obj interface{}) error {
-	return envParser.ParseInto(obj)
 }

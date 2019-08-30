@@ -30,7 +30,7 @@ var _ = Describe("Tagueuer", func() {
 			return data[c.TagValue("field_name")], nil
 		})
 
-		tagueuer.Defaults("jump", "3")
+		tagParser.Defaults("jump", "3")
 
 		tagParser.ParseInto(&eg2)
 	})

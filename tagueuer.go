@@ -23,24 +23,38 @@ type DefaultValues map[string]string
 // Tagueuer main struct, stores a map of callback functions
 // to be used when populating the struct.
 type Tagueuer struct {
-	funcs map[string]CallbackFunc
+	funcs    map[string]CallbackFunc
+	defaults DefaultValues
 }
-
-var (
-	defaults = make(DefaultValues)
-)
 
 // New creates new Tagueuer struct. With default handler
 // for `default` and `required` tag provided.
 func New() *Tagueuer {
-	return &Tagueuer{map[string]CallbackFunc{
-		"default":  setDefault,
-		"required": checkRequired,
-	}}
+	tagger := &Tagueuer{
+		funcs: map[string]CallbackFunc{
+			"required": checkRequired,
+		},
+		defaults: make(DefaultValues),
+	}
+
+	tagger.funcs["default"] = tagger.setDefault
+
+	return tagger
 }
 
-func Defaults(name string, def string) {
-	defaults[name] = def
+func (t *Tagueuer) setDefault(c *Context) (string, error) {
+	def := c.TagValue("default")
+	if c.FieldHasZeroValue() {
+		if strings.HasPrefix(def, "&") {
+			return t.defaults[strings.Trim(def, "&")], nil
+		}
+		return def, nil
+	}
+	return c.FieldValue(), nil
+}
+
+func (t *Tagueuer) Defaults(name string, def string) {
+	t.defaults[name] = def
 }
 
 // On assigns new callback for the given tag key. This can also be used
@@ -115,17 +129,6 @@ func (t *Tagueuer) ParseInto(obj interface{}) error {
 	}
 
 	return nil
-}
-
-func setDefault(c *Context) (string, error) {
-	def := c.TagValue("default")
-	if c.FieldHasZeroValue() {
-		if strings.HasPrefix(def, "&") {
-			return defaults[strings.Trim(def, "&")], nil
-		}
-		return def, nil
-	}
-	return c.FieldValue(), nil
 }
 
 func checkRequired(c *Context) (string, error) {

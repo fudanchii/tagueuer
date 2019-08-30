@@ -18,12 +18,14 @@ var _ = Describe("Envconfig", func() {
 			SavePath string `envconfig:"save_path" required:"true"`
 		}
 		err error
+
+		evconf = envconfig.New()
 	)
 
 	Describe("Populate struct from environment variable", func() {
 		Context("When env variable is not populated", func() {
 			BeforeEach(func() {
-				err = envconfig.ParseInto(&eg3)
+				err = evconf.ParseInto(&eg3)
 			})
 
 			It("returns error", func() {
@@ -38,7 +40,7 @@ var _ = Describe("Envconfig", func() {
 		Context("When some env variable is populated", func() {
 			BeforeEach(func() {
 				os.Setenv("SAVE_PATH", "/tmp/tagueuer")
-				err = envconfig.ParseInto(&eg3)
+				err = evconf.ParseInto(&eg3)
 			})
 
 			It("doesn't return error", func() {
