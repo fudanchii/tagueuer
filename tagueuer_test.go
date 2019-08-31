@@ -23,6 +23,7 @@ var _ = Describe("Tagueuer", func() {
 			"class":        "3",
 			"year":         "1",
 		}
+		err error
 	)
 
 	BeforeEach(func() {
@@ -32,10 +33,14 @@ var _ = Describe("Tagueuer", func() {
 
 		tagParser.Defaults("jump", "3")
 
-		tagParser.ParseInto(&eg2)
+		err = tagParser.ParseInto(&eg2)
 	})
 
 	Context("parse hash into struct", func() {
+		It("doesn't resulting in error", func() {
+			Expect(err).To(Equal(nil))
+		})
+
 		It("has correct value for name", func() {
 			Expect(eg2.Name).To(Equal("Chitanda Eru"))
 		})
