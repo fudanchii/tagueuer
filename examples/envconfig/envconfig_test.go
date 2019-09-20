@@ -12,10 +12,10 @@ import (
 var _ = Describe("Envconfig", func() {
 	var (
 		eg3 struct {
-			Name     string `envconfig:"app_name" default:"Tagueuer"`
-			Host     string `envconfig:"host" default:"0.0.0.0"`
-			Port     int    `envconfig:"port" default:"8769"`
-			SavePath string `envconfig:"save_path" required:"true"`
+			Name     string `env:"app_name" default:"Tagueuer"`
+			Host     string `env:"host" default:"0.0.0.0"`
+			Port     int    `env:"port" default:"8769"`
+			SavePath string `env:"save_path" required:"true"`
 		}
 		err error
 
@@ -33,7 +33,7 @@ var _ = Describe("Envconfig", func() {
 			})
 
 			It("mentions error on save_path", func() {
-				Expect(err.Error()).To(Equal("field is required but empty for tag: `envconfig:\"save_path\" required:\"true\"`"))
+				Expect(err.Error()).To(Equal("field is required but empty for tag: `env:\"save_path\" required:\"true\"`"))
 			})
 		})
 
