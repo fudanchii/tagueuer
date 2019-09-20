@@ -38,7 +38,7 @@ var _ = Describe("Tagueuer", func() {
 
 	Context("parse hash into struct", func() {
 		It("doesn't resulting in error", func() {
-			Expect(err).To(Equal(nil))
+			Expect(err).To(BeNil())
 		})
 
 		It("has correct value for name", func() {
