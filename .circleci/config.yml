@@ -2,9 +2,9 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.12
+      - image: circleci/golang:1.17
     steps:
       - checkout
       - run: |
-          go get github.com/onsi/ginkgo/ginkgo
+          go get github.com/onsi/ginkgo/v2/ginkgo
       - run: ginkgo ./...
